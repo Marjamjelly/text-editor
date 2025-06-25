@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Edit:</title>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <input type="text" id="editor" autofocus>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit:</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #222222; /* Or #000 for dark mode */
+      color: #DDDDDD;
+    }
+
+    #editor {
+      width: 100vw;
+      height: 100vh;
+      padding: 1em;
+      box-sizing: border-box;
+      outline: none;
+      font-family: monospace;
+      font-size: 1.2em;
+      white-space: pre-wrap;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="editor" contenteditable="true" spellcheck="false"></div>
+</body>
 </html>
