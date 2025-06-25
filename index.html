@@ -2,32 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Edit:</title>
+  <title>Text Haven</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #222222; /* Or #000 for dark mode */
-      color: #DDDDDD;
+      background: #222;
+      color: #DDD;
+      font-family: monospace;
+    }
+
+    #header {
+      font-size: 10pt;
+      padding: 0.5em;
+      background: #222;
+      color: #DDD;
+      display: flex;
+      gap: 0.5em;
+      align-items: center;
+      height: auto;
+    }
+
+    #header * {
+      background: #333;
+      color: #DDD;
+      border: none;
+      padding: 2px 6px;
+      font-size: 10pt;
+    }
+
+    #header select,
+    #header button {
+      cursor: pointer;
     }
 
     #editor {
+      height: calc(100vh - 2.2em); /* adjust for header height */
       width: 100vw;
-      height: 100vh;
       padding: 1em;
       box-sizing: border-box;
       outline: none;
-      font-family: monospace;
+      caret-color: #DDD;
       font-size: 1.2em;
       white-space: pre-wrap;
       overflow: auto;
-      caret-color: #DDDDDD;
-      caret-shape: block;
     }
   </style>
 </head>
 <body>
+
+  <div id="header">
+    <span><strong>Text Haven</strong></span>
+    <select id="presetSelect">
+      <option value="">— Presets —</option>
+      <option value="Lorem ipsum dolor sit amet...">Lorem Ipsum</option>
+      <option value="It was the best of times, it was the worst of times...">A Tale of Two Cities</option>
+    </select>
+    <button onclick="loadPreset()">Load</button>
+    <button onclick="clearText()">Clear</button>
+    <button onclick="copyText()">Copy</button>
+  </div>
+
   <div id="editor" contenteditable="true" spellcheck="false"></div>
+
+  <script>
+    const editor = document.getElementById('editor');
+
+    function loadPreset() {
+      const preset = document.getElementById('presetSelect').value;
+      if (preset) editor.innerText = preset;
+    }
+
+    function clearText() {
+      editor.innerText = '';
+    }
+
+    function copyText() {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand('copy');
+      selection.removeAllRanges();
+      alert("Copied to clipboard!");
+    }
+  </script>
+
 </body>
 </html>
