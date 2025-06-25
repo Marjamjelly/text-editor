@@ -4,56 +4,95 @@
   <meta charset="UTF-8">
   <title>Text Haven</title>
   <style>
+    :root {
+      --bg: #222;
+      --fg: #DDD;
+      --dim: #AAA;
+      --border: #444;
+      --accent: #333;
+    }
+
+    .light-mode {
+      --bg: #fefefe;
+      --fg: #111;
+      --dim: #555;
+      --border: #ccc;
+      --accent: #eee;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #222;
-      color: #DDD;
+      background: var(--bg);
+      color: var(--fg);
       font-family: monospace;
     }
 
     #header {
       font-size: 10pt;
-      padding: 0.5em;
-      background: #222;
-      color: #DDD;
+      padding: 0.5em 1em;
+      background: var(--bg);
+      color: var(--dim);
       display: flex;
       gap: 0.5em;
       align-items: center;
-      height: auto;
-    }
-
-    #header * {
-      background: #333;
-      color: #DDD;
-      border: none;
-      padding: 2px 6px;
-      font-size: 10pt;
+      flex-wrap: wrap;
     }
 
     #header select,
-    #header button {
+    #header button,
+    #header input[type="file"] {
+      background: var(--accent);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10pt;
+      font-family: monospace;
       cursor: pointer;
     }
 
+    #header input[type="file"] {
+      padding: 0;
+    }
+
     #editor {
-      height: calc(100vh - 2.2em); /* adjust for header height */
+      height: calc(100vh - 2.2em);
       width: 100vw;
       padding: 1em;
       box-sizing: border-box;
       outline: none;
-      caret-color: #DDD;
+      caret-color: var(--fg);
       font-size: 1.2em;
       white-space: pre-wrap;
       overflow: auto;
+      color: var(--fg);
+    }
+
+    #header.hidden {
+      display: none;
+    }
+
+    #toggleHeader {
+      position: absolute;
+      top: 0.25em;
+      right: 0.5em;
+      font-size: 8pt;
+      padding: 2px 4px;
+      border-radius: 4px;
+      background: var(--accent);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      z-index: 10;
     }
   </style>
 </head>
 <body>
 
+  <button id="toggleHeader" onclick="toggleHeader()">▲</button>
   <div id="header">
-    <span><strong>Text Haven</strong></span>
+    <span>Text Haven</span>
     <select id="presetSelect">
       <option value="">— Presets —</option>
       <option value="Lorem ipsum dolor sit amet...">Lorem Ipsum</option>
@@ -62,12 +101,21 @@
     <button onclick="loadPreset()">Load</button>
     <button onclick="clearText()">Clear</button>
     <button onclick="copyText()">Copy</button>
+    <button onclick="downloadText()">Export</button>
+    <label>
+      <input type="file" id="fileInput" accept=".txt" style="display: none;" onchange="importText(event)">
+      <button onclick="document.getElementById('fileInput').click()">Import</button>
+    </label>
+    <button onclick="toggleTheme()">Toggle Theme</button>
   </div>
 
   <div id="editor" contenteditable="true" spellcheck="false"></div>
 
   <script>
     const editor = document.getElementById('editor');
+    const header = document.getElementById('header');
+    const toggleHeaderBtn = document.getElementById('toggleHeader');
+    let darkMode = true;
 
     function loadPreset() {
       const preset = document.getElementById('presetSelect').value;
@@ -87,6 +135,37 @@
       document.execCommand('copy');
       selection.removeAllRanges();
       alert("Copied to clipboard!");
+    }
+
+    function downloadText() {
+      const blob = new Blob([editor.innerText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'text.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importText(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        editor.innerText = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      darkMode = !darkMode;
+    }
+
+    function toggleHeader() {
+      const isHidden = header.classList.toggle('hidden');
+      toggleHeaderBtn.innerText = isHidden ? '▼' : '▲';
+      editor.style.height = isHidden ? '100vh' : 'calc(100vh - 2.2em)';
     }
   </script>
 
